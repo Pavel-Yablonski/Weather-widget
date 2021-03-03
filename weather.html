@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>weather using API from openweathermap</title>
+    <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
+    <style>
+        html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, 
+        pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, 
+        small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, 
+        form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, 
+        details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, 
+        summary, time, mark, audio, video, input {
+            margin: 0;
+            margin: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+            background: transparent;
+            outline: 0;
+            -o-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 20px;
+            margin: 0;
+            font-family: 'Exo 2', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .weather-widget {
+            width: 350px;
+            background-color: lightblue;
+            border: 1px solid blue;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            position: fixed;
+            left: -500px;
+            top: 20px;
+            transition: linear 0.5s;
+        }
+
+        .side-button {
+            position: fixed;
+            background-color: cornflowerblue;
+            outline: none;
+            border: none;
+            padding: 10px;
+            top: 80px;
+            left: -50px;
+            transition: linear 0.5s;
+        }
+
+        .show-weather {
+            left: 20px;
+        }
+
+        .show__side-button {
+            left: 0;
+        }
+
+        .widget__close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAEFCu8CAAAABGdBTUEAALGPC/xhBQAAAqpJREFUSA2tljtyFEEMhsdgHJpb2NyAxwkgcQHGHGE3Bs4B8RICV6G4ARSERH4QGaog4vF/qv7HWu3MzrqMqjR69C9puls9PV13QU9Rr13Y3Vfpf7GPxLdRROGw0hs43vHYFuM9wYAMOcbYaQ47u7fJgRMGFMkwIgyHyIDesNMgAD3dkvZDvGWPlSVUG4wxBu43h0HIGT4UO7Hv2EeoB1wCQPhYzi/i12JHSA26acWpLV96IMtDGQZU+TEDrT9qAb8lD8RnzXbwC9mL5vsjGbSvpwGnzWfB+5s8F7C/cLLSDrS8y0Ci+gbguutiBzxLYCoQkMm4D0NOD47JwVUl0Vz8U5wD38veFa8ldptDw9xpfhZvkj4JkStlnT1eoXxmMrjqHKUlYlMBsclsdg5gZWkKmgP/Q3EQi2Fgc/WNe2yH5IOKowscWDslxXV0lXF7DNiwzMEOpLLHkTHX7ECv3XKvBIH5Ll7KlOfEmIm3yAWeMEDf2Ylt+iYlv/Zz2cbR39FKdmBDeU4O5jMB7jMA0yspDp6SjunlJsE3enRROAGchFyVkzIruEmTT91cTLJ61GpyMGApfinioGwy3VxwSCcHudbS/yhUi5NzhXbl4QbJ4EVB0T65nYzF59ZyiFvMGFqNGkE0a25yg/KHuUFDkJxjB9dCAdAjHwbno0YcDP4s7KySt/dfh9RJ4gWGVsF54wgP3VMGWDKbenfl6nxYwBg/JuNjw8UwBsA/tEdyr9DU7MgVn8V9Kflj7OL8kY0tJ8nH9g9//mg7HzX2xEFzPT1g6V+pBglRZzE2+3y9ON8sJ0LnD8eXHCAus4X4QMyFt26PGAMDliPhi5A85OwvROlLtCOLdfZbXVWSi5wb0WOh+Nm7bFFiiL0S8btDc/HL80Z83hgdH2NgJukfa8ehuEonW4wAAAAASUVORK5CYII=');
+            overflow: hidden;
+            text-indent: -999em;
+            text-decoration: none;
+        }
+
+        .margin {
+            margin: 10px;
+        }
+
+        .h1-weather {
+            font-weight: bold;
+            font-size: 25px;
+            border-bottom: 1px solid black;
+        }
+
+        .h1-more-weather {
+            border-top: 1px solid black;
+        }
+
+        .location-wheather {
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .icon {
+            display: flex;
+        }
+
+        .temp-weather, .descrip, .wind, .date {
+            font-size: 15px;
+        }
+
+        .show-more, .hide-more {
+            min-width: 115px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: cornflowerblue;
+            outline: none;
+            border-color: black;
+            padding: 5px;
+        }
+
+        .show-more:active, .hide-more:active {
+            box-shadow: rgba(0, 0, 0, 0.4) inset 0px 0px 10px;
+        }
+
+        div strong {
+            font-size: 18px;
+        }
+
+        .three-days {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .more-days__hide {
+            display: none;
+        }
+
+        .hide-button {
+            display: none;
+        }
+
+        .sk-wave {
+            width: 6em;
+            height: 4em;
+            margin: 50px auto;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .sk-wave .sk-rect {
+            background-color: #337ab7;
+            height: 100%;
+            width: 0.5em;
+            display: inline-block;
+            -webkit-animation: sk-wave-stretch-delay 1.2s infinite ease-in-out;
+                    animation: sk-wave-stretch-delay 1.2s infinite ease-in-out;
+        }
+
+        .sk-wave .sk-rect-1 {
+            -webkit-animation-delay: -1.2s;
+                    animation-delay: -1.2s;
+        }
+
+        .sk-wave .sk-rect-2 {
+            -webkit-animation-delay: -1.1s;
+                    animation-delay: -1.1s;
+        }
+
+        .sk-wave .sk-rect-3 {
+            -webkit-animation-delay: -1s;
+                    animation-delay: -1s;
+        }
+
+        .sk-wave .sk-rect-4 {
+            -webkit-animation-delay: -0.9s;
+                    animation-delay: -0.9s;
+        }
+
+        .sk-wave .sk-rect-5 {
+            -webkit-animation-delay: -0.8s;
+                    animation-delay: -0.8s;
+        }
+
+        @-webkit-keyframes sk-wave-stretch-delay {
+            0%, 40%, 100% {
+                transform: scaleY(0.4);
+            }
+            20% {
+                transform: scaleY(1);
+            }
+        }
+
+        @keyframes sk-wave-stretch-delay {
+            0%, 40%, 100% {
+                transform: scaleY(0.4);
+            }
+            20% {
+                transform: scaleY(1);
+            }
+        }
+
+        .loader__hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="side-button" id="side-button">П<br>О<br>Г<br>О<br>Д<br>А</button>
+    <div class="weather-widget" id="weather-widget">
+        <h1 class="h1-weather margin">Погода</h1>
+        <a href="#" class="widget__close" id="widget-close" title="Закрыть модальное окно"></a>
+    
+        <h2 class="location-wheather margin" id="location"></h2>
+        <div class="icon"id="temp-with-icon"></div>
+        <div class="temp-weather margin" id="temp"></div>
+        <div class="descrip margin" id="descr"></div>
+        <div class="wind margin" id="wind"></div>
+        <button class="show-more" id="show-more">Погода на 3 дня</button>
+        <button class="hide-more hide-button" id="hide-more">Скрыть 3 дня</button>
+        <div class="more-days__hide" id="more-days">
+            <h1 class="h1-weather h1-more-weather margin">Погода на 3 дня</h1>
+            <div class="three-days">
+                <div class="days" id="day-one">
+                    <h2 class="location-wheather margin" id="location">Минск</h2>
+                    <div class="date margin" id="date"></div>
+                    <div class="icon margin"id="temp-with-icon"></div>
+                    <div class="temp-weather margin" id="temp"></div>
+                    <div class="wind margin" id="wind"></div>
+                </div>
+                <div class="days" id="day-two">
+                    <h2 class="location-wheather margin" id="location">Минск</h2>
+                    <div class="date margin" id="date"></div>
+                    <div class="icon margin"id="temp-with-icon"></div>
+                    <div class="temp-weather margin" id="temp"></div>
+                    <div class="wind margin" id="wind"></div>
+                </div>
+                <div class="days" id="day-three">
+                    <h2 class="location-wheather margin" id="location">Минск</h2>
+                    <div class="date margin" id="date"></div>
+                    <div class="icon margin"id="temp-with-icon"></div>
+                    <div class="temp-weather margin" id="temp"></div>
+                    <div class="wind margin" id="wind"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sk-wave loader__hide" id="loader">
+            <div class="sk-rect sk-rect-1"></div>
+            <div class="sk-rect sk-rect-2"></div>
+            <div class="sk-rect sk-rect-3"></div>
+            <div class="sk-rect sk-rect-4"></div>
+            <div class="sk-rect sk-rect-5"></div>
+        </div>
+    </div>
+    
+
+<script src="WheatherWidget.js"></script>
+<script>
+    wheatherModule.init();
+</script>
+    
+</body>
+</html>
